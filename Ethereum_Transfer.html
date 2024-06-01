@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cryptocurrency Wallet</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <style>
+    body {
+      background-image: url('https://wallpapers.com/images/hd/ethereum-binary-circuit-board-arfx6i3mw7rif2de.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    }
+
+
+     {
+      background: #f3f4f6;
+      font-family: 'Roboto', sans-serif;
+      text-align: center;
+    }
+
+
+    .header {
+      padding: 20px; /* Adjust padding as needed */
+      background-color: rgba(255, 255, 255, 0.8); /* White background with some transparency */
+    }
+
+    .header h1 {
+      color: white; /* White color for the heading */
+      text-align: center;
+    }
+
+    .wallet-container {
+      max-width: 500px;
+      margin: 2rem auto;
+      padding: 2rem;
+      border: 2px solid whitesmoke;
+      background: linear-gradient(to top, #09203f 0%, #537895 100%);
+;
+      color: #fff;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .account-selector {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+
+    .account-circle {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: #3f3e40;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 1rem;
+      cursor: pointer;
+      transition: transform 0.3s, background-color 0.3s;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .account-circle.active {
+      background-color: #7FFF00;
+      transform: scale(1.1);
+    }
+
+    .account-circle:hover {
+      transform: scale(1.05);
+    }
+
+    .account-info {
+      text-align: center;
+    }
+
+    .account-info h2 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .transfer-container, .message-container {
+      margin-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .transfer-container input, .message-container input {
+      padding: 0.5rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      margin-bottom: 1rem;
+      text-align: center;
+      width: 150px;
+      color: #000;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+
+    .btn {
+      margin: 0 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 30px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.3s;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-primary {
+      background-color: #4cf57c;
+      color: #fff;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background-color: #45a049;
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background-color: #2f2f2f;
+      color: #fff;
+      border: none;
+    }
+
+    .btn-secondary:hover {
+      background-color: #272727;
+      transform: translateY(-2px);
+    }
+
+    .message-box {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #2f2f2f;
+      border-radius: 10px;
+      max-height: 200px;
+      overflow-y: auto;
+      width: 100%;
+      text-align: left;
+    }
+
+    .message {
+      padding: 0.5rem;
+      background: #4caf50;
+      border-radius: 5px;
+      margin-bottom: 0.5rem;
+    }
+
+    .error-message {
+      color: #ff6b6b;
+      margin-top: 1rem;
+    }
+
+    .header {
+      margin-bottom: 1rem;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      color: #1f1f1f;
+    }
+  </style>
+</head>
+<body> <br> 
+  <div class="header">
+    <h1>EtherJet</h1>
+  </div>
+  <div class="wallet-container">
+    <div class="account-selector">
+      <div class="account-circle active" id="account1-circle"><b>A1</b></div>
+      <div class="account-circle" id="account2-circle"><b>A2</b></div>
+    </div>
+    <div class="account-info">
+      <h2 id="account-balance">5.0274 ETH</h2>
+    </div>
+    <div class="transfer-container">
+      <input type="number" id="transfer-amount" placeholder="Amount (ETH)">
+      <div class="buttons">
+        <button class="btn btn-primary" id="buy-btn">Buy</button>
+        <button class="btn btn-secondary" id="send-btn">Send</button>
+        <button class="btn btn-secondary" id="swap-btn">Swap</button>
+      </div>
+      <div class="error-message" id="error-message"></div>
+    </div>
+    <div class="message-container">
+      <input type="text" id="message-input" placeholder="Message">
+      <button class="btn btn-primary" id="send-message-btn">Send Message</button>
+    </div>
+    <div class="message-box" id="message-box">
+    </div>
+  </div>
+  <script>
+    const account1Circle = document.getElementById('account1-circle');
+    const account2Circle = document.getElementById('account2-circle');
+    const accountBalance = document.getElementById('account-balance');
+    const transferAmount = document.getElementById('transfer-amount');
+    const sendBtn = document.getElementById('send-btn');
+    const errorMessage = document.getElementById('error-message');
+    const messageInput = document.getElementById('message-input');
+    const sendMessageBtn = document.getElementById('send-message-btn');
+    const messageBox = document.getElementById('message-box');
+
+    let balances = {
+      account1: 5.0274,
+      account2: 0.0035
+    };
+    let currentAccount = 'account1';
+
+    account1Circle.addEventListener('click', () => {
+      switchAccount('account1');
+    });
+
+    account2Circle.addEventListener('click', () => {
+      switchAccount('account2');
+    });
+
+    sendBtn.addEventListener('click', () => {
+      transferFunds();
+    });
+
+    sendMessageBtn.addEventListener('click', () => {
+      sendMessage();
+    });
+
+    function switchAccount(accountId) {
+      currentAccount = accountId;
+      account1Circle.classList.toggle('active', accountId === 'account1');
+      account2Circle.classList.toggle('active', accountId === 'account2');
+
+      // Display current account balance
+      accountBalance.textContent = `${balances[accountId]} ETH`;
+      errorMessage.textContent = '';
+      transferAmount.value = '';
+    }
+
+    function transferFunds() {
+      const amount = parseFloat(transferAmount.value);
+      if (isNaN(amount) || amount <= 0) {
+        errorMessage.textContent = 'Please enter a valid amount.';
+        return;
+      }
+
+      if (currentAccount === 'account1' && amount <= balances.account1) {
+        balances.account1 -= amount;
+        balances.account2 += amount;
+      } else if (currentAccount === 'account2' && amount <= balances.account2) {
+        balances.account2 -= amount;
+        balances.account1 += amount;
+      } else {
+        errorMessage.textContent = 'Insufficient balance.';
+        return;
+      }
+
+      switchAccount(currentAccount);
+    }
+
+    function sendMessage() {
+      const message = messageInput.value.trim();
+      if (message === '') {
+        errorMessage.textContent = 'Please enter a message.';
+        return;
+      }
+
+      const messageElement = document.createElement('div');
+      messageElement.className = 'message';
+      messageElement.textContent = `${currentAccount === 'account1' ? 'A1: ' : 'A2: '}${message}`;
+
+      if (currentAccount === 'account1') {
+        balances.account1 -= 0.0001; // Deduct a small amount for sending a message
+        if (balances.account1 < 0) {
+          balances.account1 += 0.0001;
+          errorMessage.textContent = 'Insufficient balance to send message.';
+          return;
+        }
+        messageBox.appendChild(messageElement);
+        account2Circle.classList.add('new-message'); // Indicate new message on account2
+      } else {
+        balances.account2 -= 0.0001; // Deduct a small amount for sending a message
+        if (balances.account2 < 0) {
+          balances.account2 += 0.0001;
+          errorMessage.textContent = 'Insufficient balance to send message.';
+          return;
+        }
+        messageBox.appendChild(messageElement);
+        account1Circle.classList.add('new-message'); // Indicate new message on account1
+      }
+
+      switchAccount(currentAccount);
+      messageInput.value = '';
+    }
+
+    function fetchAccountBalance(accountId) {
+      return new Promise((resolve) => {
+        resolve(balances[accountId].toString());
+      });
+    }
+  </script>
+</body>
+</html>
